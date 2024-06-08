@@ -41,6 +41,15 @@ public:
 
 	matrix(matrix_initializer<T, N>init);
 
+	//ACCESS
+	template<typename... Args>
+	Enable_if<Requesting_element<Args...>(), T&>
+		operator()(Args... args);
+
+	template<typename... Args>
+	Enable_if<Requesting_element<Args...>(), const T&>
+		operator()(Args... args) const;
+
 
 
 
@@ -51,6 +60,22 @@ template<typename ...Exts>
 inline matrix<T, N>::matrix(Exts ...exts)
 	:desc{exts...},elements(desc.size)
 {
+}
+
+template<typename T, size_t N>
+template<typename ...Args>
+inline Enable_if<Requesting_element<Args...>(), T&> matrix<T, N>::operator()(Args ...args)
+{
+	assert(MatrixImpl::check_bounds<N>(desc, args...));
+	return *(data() + desc(args...));
+}
+
+template<typename T, size_t N>
+template<typename ...Args>
+inline Enable_if<Requesting_element<Args...>(), const T&> matrix<T, N>::operator()(Args ...args) const
+{
+	assert(MatrixImpl::check_bounds<N>(desc, args...));
+	return *(data() + desc(args...));
 }
 
 template<typename T, size_t N>

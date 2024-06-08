@@ -2,6 +2,7 @@
 #include <type_traits>;
 #include <initializer_list>
 #include <array>
+#include <algorithm>
 
 namespace MatrixImpl {
 
@@ -89,5 +90,17 @@ namespace MatrixImpl {
 	void insert_flat(const List& list, Vec& vec)
 	{
 		add_list(list.begin(), list.end(), vec);
+	}
+
+	template<size_t N, typename... Dims>
+	bool check_bounds(const matrix_slice<N>& slice, Dims... dims)
+	{
+		size_t indices[N]{ static_cast<size_t>(dims)... };
+		for (size_t i = 0; i < N; ++i) {
+			if (indices[i] >= slice.extents[i]) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
