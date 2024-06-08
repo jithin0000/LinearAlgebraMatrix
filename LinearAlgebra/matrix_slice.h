@@ -23,7 +23,7 @@ struct matrix_slice
 	matrix_slice(size_t s, std::array<size_t, N> exts  , std::array<size_t, N> strs)
 		:start(0), extents(exts), strides(strs)
 	{
-		caculate_size()
+		caculate_size();
 	}
 
 	template<typename... Dims>

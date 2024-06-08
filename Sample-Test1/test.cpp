@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "../LinearAlgebra/matrix_slice.h"
+#include "../LinearAlgebra/matrix.h"
 
 
 
@@ -63,12 +64,64 @@ TEST(MATRIX_SLICE, MATRIX_SLICE_WITH_VARDIAC_TEMPLATE)
 
 TEST(MATRIX_SLICE, matrix_slice_operator)
 {
-
     matrix_slice<3> ms(3, 3, 2);
-
     EXPECT_EQ(ms(0, 0, 0), 0);
     EXPECT_EQ(ms(0, 0, 1), 1);
     EXPECT_EQ(ms(0, 1, 0), 2);
-
-
 }
+
+TEST(MATRIX, CONSTRUCTOR_WITH_VARDIAC_EXTENTS)
+{
+    matrix<int, 2>m(3, 4);
+    EXPECT_EQ(m.size(), 12);
+    EXPECT_EQ(m.order(), 2);
+}
+
+
+TEST(MATRIX, CONSTRUCTOR_WITH_MATRIX_INITIALIZER_LIST)
+{
+    matrix<int, 2>m = { {1,2},{3,4} };
+    EXPECT_EQ(m.size(), 4);
+    EXPECT_EQ(m.order(), 2);
+}
+
+
+TEST(MATRIX, matrix_get_element)
+{
+    matrix<int, 2>m = { {1,2},{3,4} };
+    EXPECT_EQ(m(0, 0), 1);
+    EXPECT_EQ(m(0, 1), 2);
+    EXPECT_EQ(m(1, 0), 3);
+    EXPECT_EQ(m(1, 1), 4);
+}
+TEST(MatrixTest, ThreeDimensionalMatrixAccess) {
+    matrix<int, 3> mat{ {
+            {
+                {1, 2}, 
+                {3, 4}
+            }, {
+                {5, 6},
+                {7, 8}
+            }
+                     } };
+
+    EXPECT_EQ(mat(0, 0, 0), 1);
+    EXPECT_EQ(mat(0, 0, 1), 2);
+    EXPECT_EQ(mat(0, 1, 0), 3);
+    EXPECT_EQ(mat(0, 1, 1), 4);
+    EXPECT_EQ(mat(1, 0, 0), 5);
+    EXPECT_EQ(mat(1, 0, 1), 6);
+    EXPECT_EQ(mat(1, 1, 0), 7);
+    EXPECT_EQ(mat(1, 1, 1), 8);
+
+    mat(1, 1, 1) = 10;
+    mat(0, 0, 0) = 0;
+
+    EXPECT_EQ(mat(1, 1, 1), 10);
+    EXPECT_EQ(mat(0, 0, 0), 0);
+}
+
+
+
+
+
