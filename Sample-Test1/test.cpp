@@ -23,10 +23,9 @@ TEST(MATRIX_SLICE, MATRIX_SLICE_CONSTRUCTOR_WITH_SIZE_AND_EXTENTS)
 
     EXPECT_EQ(ms.extents, extents);
     EXPECT_EQ(ms.size, 3 * 3 * 2);
+    std::array<size_t, 3>  strides = { 6,2,1 };
+    EXPECT_EQ(ms.strides, strides);
 
-    EXPECT_EQ(ms.strides[0], 9);
-    EXPECT_EQ(ms.strides[1], 3);
-    EXPECT_EQ(ms.strides[2], 1);
 }
 
 
@@ -34,7 +33,8 @@ TEST(MATRIX_SLICE, MATRIX_SLICE_CONSTRUCTOR_WITH_SIZE_AND_EXTENTS_AND_STRIDES)
 {
     size_t start = 2;
     std::array<size_t, 3> extents = { 3, 3, 2 };
-    std::array<size_t, 3> strides = { 1,3,9};
+    std::array<size_t, 3>  strides = { 6,2,1 };
+
     matrix_slice<3> ms(start, extents);
 
     EXPECT_EQ(ms.start, start);
@@ -42,13 +42,11 @@ TEST(MATRIX_SLICE, MATRIX_SLICE_CONSTRUCTOR_WITH_SIZE_AND_EXTENTS_AND_STRIDES)
     EXPECT_EQ(ms.extents, extents);
     EXPECT_EQ(ms.size, 3 * 3 * 2);
 
-    EXPECT_EQ(ms.strides[0], 9);
-    EXPECT_EQ(ms.strides[1], 3);
-    EXPECT_EQ(ms.strides[2], 1);
+    EXPECT_EQ(ms.strides, strides);
 }
 
 
-TEST(MATRIX_SLICE, matrix_slice_with_vardiac_template)
+TEST(MATRIX_SLICE, MATRIX_SLICE_WITH_VARDIAC_TEMPLATE)
 {
     
     matrix_slice<3> ms(3,3,2);
@@ -58,7 +56,19 @@ TEST(MATRIX_SLICE, matrix_slice_with_vardiac_template)
     EXPECT_EQ(ms.extents, extents);
     EXPECT_EQ(ms.size, 3 * 3 * 2);
 
-    EXPECT_EQ(ms.strides[0], 9);
-    EXPECT_EQ(ms.strides[1], 3);
-    EXPECT_EQ(ms.strides[2], 1);
+    std::array<size_t, 3>  strides = { 6,2,1 };
+    EXPECT_EQ(ms.strides, strides);
+   
+}
+
+TEST(MATRIX_SLICE, matrix_slice_operator)
+{
+
+    matrix_slice<3> ms(3, 3, 2);
+
+    EXPECT_EQ(ms(0, 0, 0), 0);
+    EXPECT_EQ(ms(0, 0, 1), 1);
+    EXPECT_EQ(ms(0, 1, 0), 2);
+
+
 }

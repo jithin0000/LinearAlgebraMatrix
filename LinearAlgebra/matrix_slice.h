@@ -1,5 +1,8 @@
 #pragma once
 #include <array>
+#include <numeric>
+#include "utils.h"
+
 template<size_t N>
 struct matrix_slice
 {
@@ -33,7 +36,14 @@ struct matrix_slice
 		calculate_strides();
 	}
 
-	template<typename... Dims>
+	template<typename... Dims,
+		typename = Enable_if <Requesting_element<Dims...>(), size_t>>
+		size_t operator()(Dims... dims)
+	{
+		static_assert(sizeof...(Dims) == N, "");
+		size_t args[N]{ static_cast<size_t>(dims)... };
+		return std::inner_product(args, args + N, strides.begin(), size_t(0));
+	}
 
 
 
@@ -57,7 +67,7 @@ struct matrix_slice
 		strides[N - 1] = 1;
 		for (int i = N - 1; i >= 1; i--)
 		{
-			strides[i - 1] = strides[i] * extents[i - 1];
+			strides[i - 1] = strides[i] * extents[i];
 		}
 	}
 
