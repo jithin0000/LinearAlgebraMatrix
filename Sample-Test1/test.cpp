@@ -203,7 +203,29 @@ TEST(MatrixTest, ThreeDimensionalMatrixScalarDivision) {
 
 }
 
+TEST(MatrixTest, OperatorPlusEqual) {
+    matrix<int, 2> mat1({ {1, 2}, {3, 4} });
+    matrix<int, 2> mat2({ {5, 6}, {7, 8} });
 
+    mat1 += mat2;
+
+    EXPECT_EQ(mat1(0, 0), 6);
+    EXPECT_EQ(mat1(0, 1), 8);
+    EXPECT_EQ(mat1(1, 0), 10);
+    EXPECT_EQ(mat1(1, 1), 12);
+}
+
+TEST(MatrixTest, OperatorMinusEqual) {
+    matrix<int, 2> mat1({ {5, 6}, {7, 8} });
+    matrix<int, 2> mat2({ {1, 2}, {3, 4} });
+
+    mat1 -= mat2;
+
+    EXPECT_EQ(mat1(0, 0), 4);
+    EXPECT_EQ(mat1(0, 1), 4);
+    EXPECT_EQ(mat1(1, 0), 4);
+    EXPECT_EQ(mat1(1, 1), 4);
+}
 
 
 
