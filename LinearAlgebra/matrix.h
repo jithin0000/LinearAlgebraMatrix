@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "matrix_slice.h"
 #include <vector>
 #include <initializer_list>
@@ -14,6 +14,11 @@ private:
 	matrix_slice<N> desc;
 	std::vector<T> elements;
 public:
+	
+	using value_type = T;
+	using iterator = typename std::vector<T>::iterator;
+	using const_iterator = typename std::vector<T>::const_iterator;
+
 	matrix() = default;
 
 	//move operator
@@ -51,7 +56,22 @@ public:
 		operator()(Args... args) const;
 
 
+	//OPERATION
+	template<typename F>
+	matrix& apply(F f);
 
+	//template<typename M , typename F>
+	//matrix& apply(const M& m, F f);
+
+	matrix& operator+=(const T& value); 
+	matrix& operator-=(const T & value); // scalar subtraction
+	matrix& operator*= (const T & value); // scalar multiplication
+	matrix& operator/=(const T& value); // scalar division
+	//matrix& operator%=(const T& value); // scalar modulo
+	//template<typename M> // matrix addition
+	//matrix& operator +=(const M& x);
+	//template<typename M> // matrix subtraction
+	//matrix& operator −= (const M & x);
 
 };
 
@@ -79,6 +99,15 @@ inline Enable_if<Requesting_element<Args...>(), const T&> matrix<T, N>::operator
 }
 
 template<typename T, size_t N>
+template<typename F>
+inline matrix<T,N>& matrix<T, N>::apply(F f)
+{
+	for (auto& x : elements)f(x);
+	return *this;
+}
+
+
+template<typename T, size_t N>
 inline matrix<T, N>::matrix(matrix_initializer<T, N> init)
 {
 	std::array<size_t,N> exts = MatrixImpl::derive_extents<N>(init);
@@ -86,4 +115,28 @@ inline matrix<T, N>::matrix(matrix_initializer<T, N> init)
 	elements.reserve(desc.size);
 	MatrixImpl::insert_flat(init, elements);
 	
+}
+
+template<typename T, size_t N>
+inline matrix<T,N>& matrix<T, N>::operator+=(const T& value)
+{
+	return apply([&](T& a) {a += value; });
+}
+
+template<typename T, size_t N>
+inline matrix<T, N>& matrix<T, N>::operator-=(const T & value)
+{
+	return apply([&](T& a) {a -= value; });
+}
+
+template<typename T, size_t N>
+inline matrix<T,N>& matrix<T, N>::operator*=(const T& value)
+{
+	return apply([&](T& a) { a *= value; });
+}
+
+template<typename T, size_t N>
+inline matrix<T,N>& matrix<T, N>::operator/=(const T& value)
+{
+	return apply([&](T& a) {a /= value; });
 }
