@@ -121,6 +121,111 @@ TEST(MatrixTest, ThreeDimensionalMatrixAccess) {
     EXPECT_EQ(mat(0, 0, 0), 0);
 }
 
+TEST(MatrixTest, ThreeDimensionalMatrixScalarAddition) {
+    matrix<int, 3> mat{ {
+            {
+                {1, 2},
+                {3, 4}
+            }, {
+                {5, 6},
+                {7, 8}
+            }
+                     } };
+
+   mat += 2;
+
+   EXPECT_EQ(mat(0, 0, 0), 3);
+   EXPECT_EQ(mat(0, 0, 1), 4);
+   EXPECT_EQ(mat(0, 1, 0), 5);
+   EXPECT_EQ(mat(0, 1, 1), 6);
+   EXPECT_EQ(mat(1, 0, 0), 7);
+   EXPECT_EQ(mat(1, 0, 1), 8);
+   EXPECT_EQ(mat(1, 1, 0), 9);
+   EXPECT_EQ(mat(1, 1, 1), 10);
+}
+
+
+TEST(MatrixTest, ThreeDimensionalMatrixScalarSub) {
+    matrix<int, 3> mat{ {
+            {
+                {1, 2},
+                {3, 4}
+            }, {
+                {5, 6},
+                {7, 8}
+            }
+                     } };
+
+    mat -=1;
+
+    EXPECT_EQ(mat(0, 0, 0), 0);
+    EXPECT_EQ(mat(0, 0, 1), 1);
+    EXPECT_EQ(mat(0, 1, 0), 2);
+  
+}
+
+
+TEST(MatrixTest, ThreeDimensionalMatrixScalarMultiplication) {
+    matrix<int, 3> mat{ {
+            {
+                {1, 2},
+                {3, 4}
+            }, {
+                {5, 6},
+                {7, 8}
+            }
+                     } };
+
+    mat *= 2;
+
+    EXPECT_EQ(mat(0, 0, 0), 2);
+    EXPECT_EQ(mat(0, 0, 1), 4);
+    EXPECT_EQ(mat(0, 1, 0), 6);
+
+}
+
+TEST(MatrixTest, ThreeDimensionalMatrixScalarDivision) {
+    matrix<int, 3> mat{ {
+            {
+                {1, 2},
+                {3, 4}
+            }, {
+                {5, 6},
+                {7, 8}
+            }
+                     } };
+
+    mat /= 2;
+
+    EXPECT_EQ(mat(0, 0, 0), 0);
+    EXPECT_EQ(mat(0, 0, 1), 1);
+    EXPECT_EQ(mat(0, 1, 0), 1);
+
+}
+
+TEST(MatrixTest, OperatorPlusEqual) {
+    matrix<int, 2> mat1({ {1, 2}, {3, 4} });
+    matrix<int, 2> mat2({ {5, 6}, {7, 8} });
+
+    mat1 += mat2;
+
+    EXPECT_EQ(mat1(0, 0), 6);
+    EXPECT_EQ(mat1(0, 1), 8);
+    EXPECT_EQ(mat1(1, 0), 10);
+    EXPECT_EQ(mat1(1, 1), 12);
+}
+
+TEST(MatrixTest, OperatorMinusEqual) {
+    matrix<int, 2> mat1({ {5, 6}, {7, 8} });
+    matrix<int, 2> mat2({ {1, 2}, {3, 4} });
+
+    mat1 -= mat2;
+
+    EXPECT_EQ(mat1(0, 0), 4);
+    EXPECT_EQ(mat1(0, 1), 4);
+    EXPECT_EQ(mat1(1, 0), 4);
+    EXPECT_EQ(mat1(1, 1), 4);
+}
 
 
 
