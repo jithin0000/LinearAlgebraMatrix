@@ -3,6 +3,7 @@
 #include <vector>
 #include <initializer_list>
 #include "Matrix_impl.h"
+#include "matrix_ref.h"
 
 template<typename T, size_t N>
 class matrix;
@@ -23,9 +24,6 @@ template<typename T>
 constexpr bool is_matrix_v = is_matrix<T>::value;
 
 
-
-template<typename T, size_t N>
-using matrix_initializer = typename MatrixImpl::matrix_init<T, N>::type;
 
 
 template<typename T, size_t N>
@@ -55,9 +53,21 @@ public:
 	template<typename U>
 	matrix& operator=(std::initializer_list<U>) = delete;
 
+	//TODO create from matrix_ref
+	template<typename U>
+	matrix(const matrix_ref<U,N>&);
+	template<typename U>
+	matrix& operator=(const matrix_ref<U, N>&);
+
+
+	template<typename... Exts>
+	explicit matrix(Exts... exts);
+
+	matrix(MatrixImpl::matrix_initializer<T, N>init);
+
 	T* data() { return elements.data(); }
 	const T* data() const{ return elements.data(); }
-	const matrix_slice<N> descriptor() { return desc; }
+	const matrix_slice<N> descriptor() const{ return desc; }
 
 	static constexpr size_t order() { return N; }
 	size_t extent(size_t n)const { return desc.extents[n]; }
@@ -67,10 +77,6 @@ public:
 	iterator end() { return elements.end(); }
 	const_iterator end() const { return elements.end(); }
 
-	template<typename... Exts>
-	explicit matrix(Exts... exts);
-
-	matrix(matrix_initializer<T, N>init);
 
 	//ACCESS
 	template<typename... Args>
@@ -100,6 +106,25 @@ public:
 	Enable_if<is_matrix_v<M>, matrix<T, N>&> operator-=(const M & x);
 
 };
+
+template <typename T, size_t N>
+template <typename U>
+matrix<T, N>::matrix(const matrix_ref<U, N>& m)
+	:desc(m.desc), elements{m.begin(), m.end()}
+{
+	static_assert(std::is_convertible_v<U, T>, "Matrix incompatible elements");
+}
+
+template <typename T, size_t N>
+template <typename U>
+matrix<T, N>& matrix<T, N>::operator=(const matrix_ref<U, N>& mr)
+{
+	//TODO: need to implement this
+	static_assert(std::is_convertible_v<U, T>, "Matrix incompatible elements");
+	desc = mr._desc;
+	elements.assign(mr.begin(), mr.end());
+	return *this;
+}
 
 template<typename T, size_t N>
 template<typename ...Exts>
@@ -169,7 +194,7 @@ inline Enable_if<is_matrix_v<M>, matrix<T, N>&> matrix<T, N>::operator-=(const M
 
 
 template<typename T, size_t N>
-inline matrix<T, N>::matrix(matrix_initializer<T, N> init)
+inline matrix<T, N>::matrix(MatrixImpl::matrix_initializer<T, N> init)
 {
 	std::array<size_t,N> exts = MatrixImpl::derive_extents<N>(init);
 	desc = matrix_slice<N>{ size_t{ 0 }, exts };
