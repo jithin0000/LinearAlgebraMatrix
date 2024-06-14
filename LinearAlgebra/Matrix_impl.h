@@ -31,6 +31,10 @@ namespace MatrixImpl {
 	struct matrix_init<T, 0>;
 
 
+	template<typename T, size_t N>
+	using matrix_initializer = typename MatrixImpl::matrix_init<T, N>::type;
+
+
 	template<typename List>
 	bool check_non_jagged(const List& list)
 	{

@@ -155,6 +155,7 @@
     <ClInclude Include="matrix.h" />
     <ClInclude Include="Matrix_impl.h" />
     <ClInclude Include="matrix_operations.h" />
+    <ClInclude Include="matrix_ref.h" />
     <ClInclude Include="matrix_slice.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="utils.h" />

@@ -4,10 +4,10 @@
 
 TEST(MATRIX_OPERATIONS_TEST, Addition)
 {
-	matrix<int, 2>a {
+	const matrix<int, 2>a {
 		{1,2}, {3,4}
 	};
-	matrix<int, 2>b{
+	const matrix<int, 2>b{
 	{1,2}, {3,4}
 	};
 
