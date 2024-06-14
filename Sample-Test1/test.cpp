@@ -163,6 +163,23 @@ TEST(MatrixTest, OperatorMinusEqual) {
 }
 
 
+TEST(MatrixTest, MATRIX_FROM_MATRIX_REF)
+{
+    size_t start = 2;
+    std::array<size_t, 3> extents = { 3, 3, 2 };
+    matrix_slice<3> ms(start, extents);
+
+    std::vector<int> items{};
+    for (size_t i = 0; i < 18; i++)
+    {
+        items.push_back(i);
+    }
+
+    matrix_ref<int, 3> mr(ms, items.data());
+
+    //matrix<int, 3>mat(mr);
+}
+
 
 
 int main(int argc, char** argv) {

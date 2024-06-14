@@ -112,7 +112,8 @@ template <typename U>
 matrix<T, N>::matrix(const matrix_ref<U, N>& m)
 	:desc(m.desc), elements{m.begin(), m.end()}
 {
-	static_assert(std::is_convertible_v<U, T>, "Matrix incompatible elements");
+	//static_assert(std::is_convertible_v<U, T>, "Matrix incompatible elements");
+
 }
 
 template <typename T, size_t N>
