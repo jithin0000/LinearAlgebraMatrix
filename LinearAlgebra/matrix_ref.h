@@ -1,8 +1,10 @@
 #pragma once
 #include "matrix_slice.h"
+#include "Matrix_impl.h"
+#include "matrix_base.h"
 
 template<typename T, size_t N>
-class matrix_ref
+class matrix_ref: matrix_base<T,N>
 {
 public:
 	matrix_ref() = delete;
@@ -12,14 +14,13 @@ public:
 	matrix_ref(matrix_ref&& other) noexcept;
 	matrix_ref& operator=(matrix_ref&& other) noexcept;
 
-	T* data() { return ptr; }
-	const T* data()const { return ptr; }
+	T* data() override{ return ptr; }
+	const T* data()const override{ return ptr; }
 
-	size_t size()const {
-		return desc.size;
+	const size_t size()const override{
+		return this->_desc.size;
 	}
 
-	const matrix_slice<N> descriptor()const { return desc; }
 
 	class MatrixRefIterator {
 	private:
@@ -61,19 +62,18 @@ public:
 	MatrixRefIterator end() { return MatrixRefIterator(ptr + size()); }
 	
 private:
-	matrix_slice<N> desc; // shape of the matrix
 	T* ptr; // first element of the matrix
 };
 
 template <typename T, size_t N>
 matrix_ref<T, N>::matrix_ref(const matrix_slice<N>& s, T* p)
-	:desc{s},ptr{p}
+	:matrix_base<T,N>{s},ptr{p}
 {
 }
 
 template<typename T, size_t N>
 inline matrix_ref<T, N>::matrix_ref(const matrix_ref& other)
-	:desc{other.desc},ptr{other.ptr}
+	: matrix_base<T, N>{ other.descriptor() }, ptr{ other.ptr }
 {
 }
 
@@ -91,9 +91,12 @@ inline matrix_ref<T,N>& matrix_ref<T, N>::operator=(const matrix_ref& other)
 
 template<typename T, size_t N>
 inline matrix_ref<T, N>::matrix_ref(matrix_ref&& other) noexcept
-	:desc{std::move(other.desc)},ptr{other.ptr}
+	:matrix_base<T,N>{std::move(other.descriptor())},ptr{other.ptr}
 {
 	//TODO: check same extents
+	assert(MatrixImpl::same_extents(
+	this->_desc.extents, other.descriptor().extents
+	), "matrix_ref::move");
 	other.ptr = nullptr;
 }
 
