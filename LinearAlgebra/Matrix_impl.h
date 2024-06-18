@@ -107,4 +107,14 @@ namespace MatrixImpl {
 		}
 		return true;
 	}
+	template< size_t N>
+	bool same_extents(const std::array<size_t, N>& a, const std::array<size_t, N>&b)
+	{
+		for (size_t i = 0; i < a.size(); i++)
+		{
+			if (a[i] != b[i])
+				return false;
+		}
+		return true;
+	}
 }

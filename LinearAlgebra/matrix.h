@@ -3,7 +3,7 @@
 #include <vector>
 #include <initializer_list>
 #include "Matrix_impl.h"
-#include "matrix_ref.h"
+#include "matrix_base.h"
 
 template<typename T, size_t N>
 class matrix;
@@ -27,10 +27,9 @@ constexpr bool is_matrix_v = is_matrix<T>::value;
 
 
 template<typename T, size_t N>
-class matrix
+class matrix: public matrix_base<T,N>
 {
 private:
-	matrix_slice<N> desc;
 	std::vector<T> elements;
 public:
 	
@@ -53,11 +52,7 @@ public:
 	template<typename U>
 	matrix& operator=(std::initializer_list<U>) = delete;
 
-	//TODO create from matrix_ref
-	template<typename U>
-	matrix(const matrix_ref<U,N>&);
-	template<typename U>
-	matrix& operator=(const matrix_ref<U, N>&);
+	~matrix() = default;
 
 
 	template<typename... Exts>
@@ -65,27 +60,16 @@ public:
 
 	matrix(MatrixImpl::matrix_initializer<T, N>init);
 
-	T* data() { return elements.data(); }
-	const T* data() const{ return elements.data(); }
-	const matrix_slice<N> descriptor() const{ return desc; }
+	const size_t size()const override { return elements.size(); }
+	T* data() override { return elements.data(); }
+	const T* data() const override{ return elements.data(); }
+	// TODO: need to handle this
+	size_t extent(size_t n)const { return this->_desc.extents[n]; }
 
-	static constexpr size_t order() { return N; }
-	size_t extent(size_t n)const { return desc.extents[n]; }
-	size_t size()const { return elements.size(); }
 	iterator begin() { return elements.begin(); }
 	const_iterator begin() const { return elements.begin(); }
 	iterator end() { return elements.end(); }
 	const_iterator end() const { return elements.end(); }
-
-
-	//ACCESS
-	template<typename... Args>
-	Enable_if<Requesting_element<Args...>(), T&>
-		operator()(Args... args);
-
-	template<typename... Args>
-	Enable_if<Requesting_element<Args...>(), const T&>
-		operator()(Args... args) const;
 
 
 	//OPERATION
@@ -107,47 +91,15 @@ public:
 
 };
 
-template <typename T, size_t N>
-template <typename U>
-matrix<T, N>::matrix(const matrix_ref<U, N>& m)
-	:desc(m.desc), elements{m.begin(), m.end()}
-{
-	static_assert(std::is_convertible_v<U, T>, "Matrix incompatible elements");
-}
 
-template <typename T, size_t N>
-template <typename U>
-matrix<T, N>& matrix<T, N>::operator=(const matrix_ref<U, N>& mr)
-{
-	//TODO: need to implement this
-	static_assert(std::is_convertible_v<U, T>, "Matrix incompatible elements");
-	desc = mr._desc;
-	elements.assign(mr.begin(), mr.end());
-	return *this;
-}
 
 template<typename T, size_t N>
 template<typename ...Exts>
 inline matrix<T, N>::matrix(Exts ...exts)
-	:desc{exts...},elements(desc.size)
+	:matrix_base<T,N>{exts...},elements(this->_desc.size)
 {
 }
 
-template<typename T, size_t N>
-template<typename ...Args>
-inline Enable_if<Requesting_element<Args...>(), T&> matrix<T, N>::operator()(Args ...args)
-{
-	assert(MatrixImpl::check_bounds<N>(desc, args...));
-	return *(data() + desc(args...));
-}
-
-template<typename T, size_t N>
-template<typename ...Args>
-inline Enable_if<Requesting_element<Args...>(), const T&> matrix<T, N>::operator()(Args ...args) const
-{
-	assert(MatrixImpl::check_bounds<N>(desc, args...));
-	return *(data() + desc(args...));
-}
 
 template<typename T, size_t N>
 template<typename F>
@@ -162,7 +114,7 @@ template<typename M, typename F>
 Enable_if<is_matrix_v<M>, matrix<T,N>&> matrix<T, N>::apply( const M& m, F f)
 {
 	static_assert(is_matrix_v<M>, "M must be a matrix type");
-	static_assert(M::order() == N, "Matrix dimensions must match");
+	assert(MatrixImpl::same_extents(this->_desc.extents, m._desc.extents));
 	for (size_t i = 0; i < N; ++i) {
 		assert(extent(i) == m.extent(i));
 	}
@@ -179,8 +131,8 @@ template<typename T, size_t N>
 template<typename M>
 Enable_if<is_matrix_v<M>, matrix<T, N>&>  matrix<T, N>::operator+=(const M& m)
 {
-	static_assert(m.order() == N, "+= dimensions mismatch");
 	//check same extents
+	assert(MatrixImpl::same_extents(this->_desc.extents, m._desc.extents));
 	return apply(m, [](T& a, const typename M::value_type& b) { a += b; });
 }
 
@@ -188,7 +140,7 @@ template<typename T, size_t N>
 template<typename M>
 inline Enable_if<is_matrix_v<M>, matrix<T, N>&> matrix<T, N>::operator-=(const M& m)
 {
-	static_assert(m.order() == N, "-= dimensions mismatch");
+	assert(MatrixImpl::same_extents(this->_desc.extents, m._desc.extents));
 	return apply(m, [](T& a, const typename M::value_type& b) {a -= b; });
 }
 
@@ -197,10 +149,10 @@ template<typename T, size_t N>
 inline matrix<T, N>::matrix(MatrixImpl::matrix_initializer<T, N> init)
 {
 	std::array<size_t,N> exts = MatrixImpl::derive_extents<N>(init);
-	desc = matrix_slice<N>{ size_t{ 0 }, exts };
-	elements.reserve(desc.size);
+	// optmize this , may be std::move
+	this->_desc = matrix_slice<N>{ size_t{ 0 }, exts };
+	elements.reserve(this->_desc.size);
 	MatrixImpl::insert_flat(init, elements);
-	
 }
 
 template<typename T, size_t N>
