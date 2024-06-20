@@ -162,7 +162,32 @@ TEST(MatrixTest, OperatorMinusEqual) {
     EXPECT_EQ(mat1(1, 1), 4);
 }
 
+// Testing Row Access
+TEST(MatrixTest, ROWACCESS)
+{
+    matrix<int, 2> m{ {14,28,90}, { 7,45,33} };
+    auto v =  m.row(0);
+    EXPECT_EQ(v(0), 14);
+    EXPECT_EQ(v(1), 28);
+    EXPECT_EQ(v(2), 90);
 
+}
+
+
+TEST(MatrixTest, OPERATOR_FORTAN)
+{
+    matrix<int, 2> m{ {14,28,90}, { 7,45,33} };
+    auto v = m[0];
+    EXPECT_EQ(v(0), 14);
+    EXPECT_EQ(v(1), 28);
+    EXPECT_EQ(v(2), 90);
+
+    auto x = m[1];
+    EXPECT_EQ(x(0), 7);
+    EXPECT_EQ(x(1), 45);
+    EXPECT_EQ(x(2), 33);
+
+}
 
 
 

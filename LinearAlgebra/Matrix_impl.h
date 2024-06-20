@@ -117,4 +117,39 @@ namespace MatrixImpl {
 		}
 		return true;
 	}
+
+	template<size_t N>
+	size_t calculate_size(const std::array<size_t,N>& extents)
+	{
+		size_t size = 1;
+		for (size_t i = 0; i < N; i++)
+		{
+			size *= extents[i];
+		}
+		return size;
+	}
+
+	template<size_t I, size_t N>
+	void slice_dim(size_t offset, const matrix_slice<N>& desc,
+		matrix_slice<N - 1>& row)
+	{
+		row.start = desc.start;
+		// check these things
+		int j = static_cast<int>(N - 2);
+		for (int i = N - 1; i >= 0; i--)
+		{
+			if (i == I)
+				row.start += desc.strides[i] * offset;
+			else
+			{
+				row.extents[j] = desc.extents[i];
+				row.strides[j] = desc.strides[i];
+				--j;
+			}
+		}
+		row.size = calculate_size(row.extents);
+
+	}
+
+
 }

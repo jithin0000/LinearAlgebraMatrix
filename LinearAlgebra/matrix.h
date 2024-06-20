@@ -4,6 +4,7 @@
 #include <initializer_list>
 #include "Matrix_impl.h"
 #include "matrix_base.h"
+#include "matrix_ref.h"
 
 template<typename T, size_t N>
 class matrix;
@@ -63,7 +64,6 @@ public:
 	const size_t size()const override { return elements.size(); }
 	T* data() override { return elements.data(); }
 	const T* data() const override{ return elements.data(); }
-	// TODO: need to handle this
 	size_t extent(size_t n)const { return this->_desc.extents[n]; }
 
 	iterator begin() { return elements.begin(); }
@@ -88,6 +88,25 @@ public:
 	Enable_if<is_matrix_v<M>, matrix<T, N>&>  operator+=(const M& x);
 	template<typename M> // matrix subtraction
 	Enable_if<is_matrix_v<M>, matrix<T, N>&> operator-=(const M & x);
+
+
+	// row access
+	matrix_ref<T, N - 1> row(size_t n);
+	matrix_ref<T, N - 1> row(size_t i) const;
+
+
+	//// col access
+	//matrix_ref<T, N - 1> col(size_t i);
+	//matrix_ref<T, N - 1> col(size_t i) const;
+
+
+	//// Row access m[i]
+	matrix_ref<T, N - 1> operator[](size_t i) { return row(i); }
+	matrix_ref<const T, N - 1> operator[](size_t i) const { return row(i); }
+
+	//
+
+
 
 };
 
@@ -178,3 +197,22 @@ inline matrix<T,N>& matrix<T, N>::operator/=(const T& value)
 {
 	return apply([&](T& a) {a /= value; });
 }
+
+template<typename T, size_t N>
+inline matrix_ref<T, N - 1> matrix<T, N>::row(size_t n)
+{
+	assert(n < this->rows());
+	matrix_slice<N - 1> row;
+	MatrixImpl::slice_dim<0>(n, this->_desc, row);
+	return { row, data() };
+}
+
+template<typename T, size_t N>
+inline matrix_ref<T, N - 1> matrix<T, N>::row(size_t n)const 
+{
+	assert(n < this->rows());
+	matrix_slice<N - 1> row;
+	MatrixImpl::slice_dim<0>(n, this->_desc, row);
+	return { row, data() };
+}
+

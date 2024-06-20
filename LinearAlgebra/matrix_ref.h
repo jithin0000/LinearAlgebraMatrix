@@ -3,8 +3,10 @@
 #include "Matrix_impl.h"
 #include "matrix_base.h"
 
+
+
 template<typename T, size_t N>
-class matrix_ref: matrix_base<T,N>
+class matrix_ref:public matrix_base<T,N>
 {
 public:
 	matrix_ref() = delete;
@@ -13,6 +15,16 @@ public:
 	matrix_ref& operator=(const matrix_ref& other);
 	matrix_ref(matrix_ref&& other) noexcept;
 	matrix_ref& operator=(matrix_ref&& other) noexcept;
+
+	template<typename U>
+	matrix_ref(const matrix_ref<U, N>& x);
+	template<typename U>
+	matrix_ref& operator=(const matrix_ref<U, N>& x);
+
+	//template<typename U>
+	//matrix_ref(const matrix<U, N>&);
+	//template<typename U>
+	//matrix_ref& operator=(const matrix<U, N>&x);
 
 	T* data() override{ return ptr; }
 	const T* data()const override{ return ptr; }
@@ -82,12 +94,20 @@ inline matrix_ref<T,N>& matrix_ref<T, N>::operator=(const matrix_ref& other)
 {
 	if (this != other)
 	{
-		desc = other.desc;
+		this->_desc = other._desc;
 		ptr = other.ptr;
 	}
 	return *this;
 	
 }
+
+//template<typename T, size_t N>
+//template<typename U>
+//inline matrix_ref<T, N>::matrix_ref(const matrix<U, N>& x)
+//	:matrix_base<T, N>{ x.descriptor() }, ptr(x.data)
+//{
+//	
+//}
 
 template<typename T, size_t N>
 inline matrix_ref<T, N>::matrix_ref(matrix_ref&& other) noexcept
@@ -105,9 +125,20 @@ inline matrix_ref<T,N>& matrix_ref<T, N>::operator=(matrix_ref&& other) noexcept
 {
 	if (this != other)
 	{
-		desc =std::move(other.desc);
+		this->_desc =std::move(other._desc);
 		ptr = other.ptr;
 		other.ptr = nullptr;
 	}
 	return *this;
 }
+
+//template<typename T, size_t N>
+//template<typename U>
+//inline matrix_ref<T,N>& matrix_ref<T, N>::operator=(const matrix<U, N>&x)
+//{
+//	static_assert(std::is_convertible_v<U, T>, "matri_ref from matrix");
+//	assert(MatrixImpl::same_extents(this->_desc.extents, x.descriptor().extents));
+//	std::copy(x.begin(), x.end(), begin());
+//	return *this;
+//
+//}

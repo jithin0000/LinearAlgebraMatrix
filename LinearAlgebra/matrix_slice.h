@@ -42,7 +42,7 @@ struct matrix_slice
 	{
 		static_assert(sizeof...(Dims) == N, "");
 		size_t args[N]{ static_cast<size_t>(dims)... };
-		return std::inner_product(args, args + N, strides.begin(), size_t(0));
+		return start+ std::inner_product(args, args + N, strides.begin(), size_t(0));
 	}
 
 
@@ -98,7 +98,7 @@ struct matrix_slice<1>
 	
 	size_t operator()(size_t i) const
 	{
-			return i;
+			return start+ i;
 	}
 
 	void calculate_size()
@@ -148,7 +148,7 @@ std::array<size_t, 2> strs)
 
 	size_t operator()(size_t i, size_t j) const
 	{
-		return i * strides[0]+j;
+		return start+ ( i * strides[0]+j );
 	}
 
 	void calculate_size()

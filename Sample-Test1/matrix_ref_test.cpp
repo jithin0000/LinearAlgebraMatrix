@@ -111,3 +111,4 @@ TEST(matrix_ref_test, MOVE_CONSTRUCTOR_OPERATOR)
         j++;
     }
 }
+

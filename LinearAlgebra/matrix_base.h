@@ -26,6 +26,8 @@ public:
 	
 	virtual const size_t size()const=0;
 	const matrix_slice<N>& descriptor() const{ return _desc; }
+	const size_t rows() const { return _desc.extents[0]; }
+	const size_t cols() const { return _desc.extents[1]; }
 
 	virtual T* data() = 0;
 	virtual const T* data()const = 0;
