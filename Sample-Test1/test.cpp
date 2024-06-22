@@ -189,6 +189,41 @@ TEST(MatrixTest, OPERATOR_FORTAN)
 
 }
 
+// col access
+TEST(MatrixTest, COL_ACCESS)
+{
+    matrix<int, 2> m{ {14,28,90}, { 7,45,33} };
+    auto v = m.col(0);
+    EXPECT_EQ(v(0), 14);
+    EXPECT_EQ(v(1), 7);
+
+}
+
+
+
+TEST(MatrixTest, COL)
+{
+    matrix<double, 3> m{
+        {
+            {0.637, 0.479, 0.444, 0.925, 0.551},
+            {0.684, 0.396, 0.995, 0.825, 0.646},
+            {0.978, 0.603, 0.452, 0.428, 0.867}
+        },
+        {
+            {0.519, 0.102, 0.368, 0.289, 0.115},
+            {0.816, 0.438, 0.913, 0.065, 0.489},
+            {0.888, 0.933, 0.559, 0.930, 0.464}
+        }
+    };
+    auto v = m.col(0);
+    EXPECT_EQ(v(0, 0), 0.637);
+    EXPECT_EQ(v(0, 1), 0.684);
+    EXPECT_EQ(v(1,0), 0.519);
+    EXPECT_EQ(v(1, 1), 0.816);
+    EXPECT_EQ(v(1, 2), 0.888);
+
+
+}
 
 
 int main(int argc, char** argv) {

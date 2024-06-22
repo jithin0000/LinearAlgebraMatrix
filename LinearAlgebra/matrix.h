@@ -96,7 +96,7 @@ public:
 
 
 	//// col access
-	//matrix_ref<T, N - 1> col(size_t i);
+	matrix_ref<T, N - 1> col(size_t i);
 	//matrix_ref<T, N - 1> col(size_t i) const;
 
 
@@ -216,3 +216,11 @@ inline matrix_ref<T, N - 1> matrix<T, N>::row(size_t n)const
 	return { row, data() };
 }
 
+template<typename T, size_t N>
+inline matrix_ref<T, N - 1> matrix<T, N>::col(size_t n)
+{
+	assert(n < this->rows());
+	matrix_slice<N - 1> col;
+	MatrixImpl::slice_dim<1>(n, this->_desc, col);
+	return { col, data() };
+}

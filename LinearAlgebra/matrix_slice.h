@@ -98,7 +98,7 @@ struct matrix_slice<1>
 	
 	size_t operator()(size_t i) const
 	{
-			return start+ i;
+			return start+ i * strides[0];
 	}
 
 	void calculate_size()
@@ -148,7 +148,7 @@ std::array<size_t, 2> strs)
 
 	size_t operator()(size_t i, size_t j) const
 	{
-		return start+ ( i * strides[0]+j );
+		return start+ ( i * strides[0] + j * strides[1]  );
 	}
 
 	void calculate_size()

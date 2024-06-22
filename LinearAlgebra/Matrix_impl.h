@@ -134,20 +134,34 @@ namespace MatrixImpl {
 		matrix_slice<N - 1>& row)
 	{
 		row.start = desc.start;
-		// check these things
-		int j = static_cast<int>(N - 2);
-		for (int i = N - 1; i >= 0; i--)
+		if (I == 0)
 		{
-			if (i == I)
-				row.start += desc.strides[i] * offset;
-			else
+			int j = static_cast<int>(N - 2);
+			for (int i = N - 1; i >= 0; i--)
 			{
-				row.extents[j] = desc.extents[i];
-				row.strides[j] = desc.strides[i];
-				--j;
+				if (i != N - 2)
+				{
+					row.extents[j] = desc.extents[i];
+					row.strides[j] = desc.strides[i];
+					--j;
+				}
 			}
+			row.start = desc.strides[0] * offset;
+		}
+		else {
+			int j = static_cast<int>(N - 2);
+			for (int i = N - 1; i >= 0; i--)
+			{
+				if (i != N - 1)
+				{
+					row.extents[i] = desc.extents[i];
+					row.strides[i] = desc.strides[i];
+				}
+			}
+			row.start = desc.strides[N - 1] * offset;
 		}
 		row.size = calculate_size(row.extents);
+
 
 	}
 
