@@ -48,16 +48,22 @@ public:
 	matrix(const matrix&) = default;
 	matrix& operator=(const matrix&) = default;
 
+	// matrix_ref
+	template<typename U>
+	matrix(const matrix_ref<U, N>&);
+	template<typename U>
+	matrix<T,N>& operator=(const matrix_ref<U, N>&);
+
 	template<typename U>
 	matrix(std::initializer_list<U>) = delete;
 	template<typename U>
 	matrix& operator=(std::initializer_list<U>) = delete;
-
 	~matrix() = default;
-
-
 	template<typename... Exts>
 	explicit matrix(Exts... exts);
+
+
+
 
 	matrix(MatrixImpl::matrix_initializer<T, N>init);
 
@@ -104,13 +110,33 @@ public:
 	matrix_ref<T, N - 1> operator[](size_t i) { return row(i); }
 	matrix_ref<const T, N - 1> operator[](size_t i) const { return row(i); }
 
-	//
 
 
 
 };
 
 
+
+template<typename T, size_t N>
+template<typename U>
+inline matrix<T, N>::matrix(const matrix_ref<U, N>&ref)
+	:matrix_base<T, N>{ ref.descriptor() },
+	elements{ref.begin(), ref.end()}
+{
+	static_assert(std::is_convertible_v<U, T>,
+		"matrix constructor from matrix_ref, in compatable types");
+
+}
+
+template<typename T, size_t N>
+template<typename U>
+inline matrix<T, N>& matrix<T, N>::operator=(const matrix_ref<U, N>& ref)
+{
+	static_assert(std::is_convertible_v<U, T>,
+		"matrix::matrix_ref operator = type mismatch ");
+	this->_desc = ref.descriptor();
+	std::copy(ref.begin(), ref.end(), begin());
+}
 
 template<typename T, size_t N>
 template<typename ...Exts>

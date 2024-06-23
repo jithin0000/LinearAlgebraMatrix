@@ -136,12 +136,12 @@ std::array<size_t, 2> strs)
 		calculate_size();
 	}
 
-	template<typename... Dims>
-	matrix_slice(Dims... dims)
-		: start(0), extents{ static_cast<size_t>(dims)... }
+	template<typename Dims>
+	matrix_slice(Dims dim1, Dims dim2)
+		: start(0)
 	{
-		static_assert(sizeof...(Dims) == 2, "");
-
+		extents[0] = static_cast<size_t>(dim1);
+		extents[1] = static_cast<size_t>(dim2);
 		calculate_size();
 		calculate_strides();
 	}

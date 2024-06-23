@@ -72,6 +72,8 @@ public:
 
 	MatrixRefIterator begin() { return MatrixRefIterator(ptr); }
 	MatrixRefIterator end() { return MatrixRefIterator(ptr + size()); }
+	MatrixRefIterator begin() const { return MatrixRefIterator(ptr); }
+	MatrixRefIterator end() const { return MatrixRefIterator(ptr + size()); }
 	
 private:
 	T* ptr; // first element of the matrix
