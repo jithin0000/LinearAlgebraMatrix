@@ -134,8 +134,9 @@ inline matrix<T, N>& matrix<T, N>::operator=(const matrix_ref<U, N>& ref)
 {
 	static_assert(std::is_convertible_v<U, T>,
 		"matrix::matrix_ref operator = type mismatch ");
-	this->_desc = ref.descriptor();
-	std::copy(ref.begin(), ref.end(), begin());
+	this->_desc = ref._desc;
+	elements.assign(ref.begin(), ref.end());
+	return *this;
 }
 
 template<typename T, size_t N>
