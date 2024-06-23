@@ -200,7 +200,6 @@ TEST(MatrixTest, COL_ACCESS)
 }
 
 
-
 TEST(MatrixTest, COL)
 {
     matrix<double, 3> m{
@@ -224,6 +223,34 @@ TEST(MatrixTest, COL)
 
 
 }
+
+
+
+TEST(MatrixTest, MATRIX_REF_CONSTRUCTOR)
+{
+    std::vector<int> elements(6);
+    for (size_t i = 0; i < 6; i++)
+    {
+        elements[i] = i + 1;
+    }
+
+    std::array<size_t, 2>exts{ 2,3 };
+    matrix_slice<2> slice(0, exts);
+    matrix_ref<int, 2> mr{slice,elements.data() };
+
+    matrix<int, 2>m(mr);
+    EXPECT_EQ(m(0, 0), 1);
+    EXPECT_EQ(m(0, 1), 2);
+    EXPECT_EQ(m(0, 2), 3);
+
+
+    matrix<int, 2>mc = mr;
+    EXPECT_EQ(mc(0, 0), 1);
+    EXPECT_EQ(mc(0, 1), 2);
+    EXPECT_EQ(mc(0, 2), 3);
+
+}
+
 
 
 int main(int argc, char** argv) {
