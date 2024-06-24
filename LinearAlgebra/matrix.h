@@ -251,3 +251,145 @@ inline matrix_ref<T, N - 1> matrix<T, N>::col(size_t n)
 	MatrixImpl::slice_dim<1>(n, this->_desc, col);
 	return { col, data() };
 }
+
+
+template<typename T>
+class matrix<T,1> :public matrix_base<T, 1> {
+private:
+	std::vector<T> elements;
+public:
+
+	using value_type = T;
+	using iterator = typename std::vector<T>::iterator;
+	using const_iterator = typename std::vector<T>::const_iterator;
+
+	matrix() = default;
+
+	//move operator
+	matrix(matrix&&) = default;
+	matrix& operator=(matrix&&) = default;
+
+	//move operator
+	matrix(const matrix&) = default;
+	matrix& operator=(const matrix&) = default;
+
+	// matrix_ref
+	template<typename U>
+	matrix(const matrix_ref<U, 1>& r) :matrix_base<T, 1>{
+		r.descriptor() }, elements{r.begin(), r.end()}
+	{
+		static_assert(std::is_convertible_v<U, T>, "");
+	};
+	template<typename U>
+	matrix<T, 1>& operator=(const matrix_ref<U, 1>& r) {
+		static_assert(std::is_convertible_v<U, T>, "");
+		this->_desc = r.descriptor();
+		elements.assign(r.begin(), r.end());
+		return *this;
+	};
+
+	template<typename U>
+	matrix(std::initializer_list<U>) = delete;
+	template<typename U>
+	matrix& operator=(std::initializer_list<U>) = delete;
+	~matrix() = default;
+
+
+	template<typename Exts>
+	explicit matrix(Exts exts):
+		matrix_base<T,1>{ exts }, elements(this->_desc.size)
+	{
+
+	}
+
+
+
+
+	matrix(MatrixImpl::matrix_initializer<T, 1>init) {
+		//TODO fix this one 
+		std::array<size_t, 1>a = { init.size() };
+		this->_desc = matrix_slice<1>{ size_t{0}, a };
+		elements.push_back(*init.begin());
+	};
+
+	const size_t size()const override { return elements.size(); }
+	T* data() override { return elements.data(); }
+	const T* data() const override { return elements.data(); }
+	size_t extent(size_t n)const { return this->_desc.extents[n]; }
+
+	iterator begin() { return elements.begin(); }
+	const_iterator begin() const { return elements.begin(); }
+	iterator end() { return elements.end(); }
+	const_iterator end() const { return elements.end(); }
+
+
+	//OPERATION
+	template<typename F>
+	matrix& apply(F f) {
+		for (auto& x : elements)f(x);
+		return *this;
+	};
+
+	template<typename M, typename F>
+	Enable_if<is_matrix_v<M>, matrix<T, 1>&>  apply(const M & m, F f) {
+		static_assert(is_matrix_v<M>, "M must be a matrix type");
+		assert(MatrixImpl::same_extents(this->_desc.extents, m._desc.extents));
+		for (size_t i = 0; i < 1; ++i) {
+			assert(extent(i) == m.extent(i));
+		}
+		auto i = begin();
+		auto j = m.begin();
+
+		for (; i != end(); ++i, ++j)
+			f(*i, *j);
+		return *this;
+
+	};
+
+	matrix& operator+=(const T& value) {
+		return apply([&](T& a) {a += value; });
+	};
+	matrix& operator-=(const T& value) {
+		return apply([&](T& a) {a -= value; });
+	}; // scalar subtraction
+	matrix& operator*= (const T& value) {
+		return apply([&](T& a) {a *= value; });
+	}; // scalar multiplication
+	matrix& operator/=(const T & value) {
+		return apply([&](T& a) {a /= value; });
+	}; // scalar division
+	//matrix& operator%=(const T& value); // scalar modulo
+	template<typename M> // matrix addition
+	Enable_if<is_matrix_v<M>, matrix<T, 1>&>  operator+=(const M& m) {
+		assert(MatrixImpl::same_extents(this->_desc.extents, m._desc.extents));
+		return apply(m, [](T& a, const typename M::value_type& b) { a += b; });
+	};
+	template<typename M> // matrix subtraction
+	Enable_if<is_matrix_v<M>, matrix<T, 1>&> operator-=(const M & m) {
+		assert(MatrixImpl::same_extents(this->_desc.extents, m._desc.extents));
+		return apply(m, [](T& a, const typename M::value_type& b) { a -= b; });
+	};
+
+
+	// row access
+	T& row(size_t i) {
+		return elements[i];
+	};
+	T& row(size_t i) const {
+		return elements[i];
+	};
+
+
+	//// col access
+	T& col(size_t i) {
+		//FIXME need to check this
+		return &elements[i];
+	};
+	//matrix_ref<T, N - 1> col(size_t i) const;
+
+
+	//// Row access m[i]
+	T& operator[](size_t i) { return row(i); }
+	T& operator[](size_t i) const { return row(i); }
+
+};
