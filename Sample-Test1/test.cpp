@@ -197,6 +197,8 @@ TEST(MatrixTest, COL_ACCESS)
     EXPECT_EQ(v(0), 14);
     EXPECT_EQ(v(1), 7);
 
+
+
 }
 
 
@@ -249,6 +251,23 @@ TEST(MatrixTest, MATRIX_REF_CONSTRUCTOR)
     EXPECT_EQ(mc(0, 1), 2);
     EXPECT_EQ(mc(0, 2), 3);
 
+}
+
+
+TEST(MatrixTest, TestingSpecialization)
+{
+    matrix<int, 1> m{ 1,2,3 };
+    EXPECT_EQ(m(0), 1);
+    auto row = m.row(0);
+    EXPECT_EQ(row, 1);
+    EXPECT_EQ(m[0],1);
+
+    // Test Addition and other operations
+    m += 2;
+    EXPECT_EQ(m(0), 3);
+
+    m *= 2;
+    EXPECT_EQ(m(0), 6);
 }
 
 
