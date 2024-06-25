@@ -309,7 +309,7 @@ public:
 		//TODO fix this one 
 		std::array<size_t, 1>a = { init.size() };
 		this->_desc = matrix_slice<1>{ size_t{0}, a };
-		elements.push_back(*init.begin());
+		MatrixImpl::insert_flat(init, elements);
 	};
 
 	const size_t size()const override { return elements.size(); }
@@ -375,7 +375,7 @@ public:
 	T& row(size_t i) {
 		return elements[i];
 	};
-	T& row(size_t i) const {
+	const T& row(size_t i) const {
 		return elements[i];
 	};
 
@@ -390,6 +390,6 @@ public:
 
 	//// Row access m[i]
 	T& operator[](size_t i) { return row(i); }
-	T& operator[](size_t i) const { return row(i); }
+	const T& operator[](size_t i) const { return row(i); }
 
 };
