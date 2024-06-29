@@ -42,12 +42,18 @@
     <ClInclude Include="matrix_base.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="matrix_exp_temp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="matrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="matrix_exp_temp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

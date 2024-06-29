@@ -154,6 +154,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="matrix.h" />
     <ClInclude Include="matrix_base.h" />
+    <ClInclude Include="matrix_exp_temp.h" />
     <ClInclude Include="Matrix_impl.h" />
     <ClInclude Include="matrix_operations.h" />
     <ClInclude Include="matrix_ref.h" />
@@ -163,6 +164,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="matrix.cpp" />
+    <ClCompile Include="matrix_exp_temp.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
