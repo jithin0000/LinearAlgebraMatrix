@@ -1,6 +1,7 @@
 #pragma once
 #include "matrix_slice.h"
 #include "utils.h"
+#include <cassert>
 template<typename T ,size_t N>
 class matrix_base {
 

@@ -5,6 +5,7 @@
 #include "Matrix_impl.h"
 #include "matrix_base.h"
 #include "matrix_ref.h"
+#include "matrix_exp_temp.h"
 
 template<typename T, size_t N>
 class matrix;
@@ -391,5 +392,14 @@ public:
 	//// Row access m[i]
 	T& operator[](size_t i) { return row(i); }
 	const T& operator[](size_t i) const { return row(i); }
+
+	
+
+
+	matrix<T, 1>& operator=(const MVmulVadd& mul)
+	{
+		scale_and_add(this, &mul.m, &mul.v, &mul.w);
+		return *this;
+	}
 
 };

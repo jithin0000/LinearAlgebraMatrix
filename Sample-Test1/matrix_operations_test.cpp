@@ -60,3 +60,21 @@ TEST(MATRIX_OPERATIONS_TEST, MULTIPLICATION_3)
 	EXPECT_EQ(m.extent(1), 2);
 
 }
+
+TEST(MATRIX_OPERATIONS_TEST, MULTIPLICATION_AND_ADD)
+{
+	matrix<double, 2> a{ {1,2},
+						{3,4}
+	};
+	matrix<double, 1> b = { {2},
+						{3} };
+	matrix<double, 1> c = { {3},
+						{4} };
+
+
+	matrix<double,1> u = a * b + c;
+	EXPECT_EQ(u(0), 11);
+	EXPECT_EQ(u(1), 22);
+
+
+}

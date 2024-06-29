@@ -162,8 +162,8 @@ namespace MatrixImpl {
 		}
 		row.size = calculate_size(row.extents);
 
-
 	}
+
 
 
 }
